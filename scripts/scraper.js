@@ -3,7 +3,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var async = require('async');
 
-var YEARS = [1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015];
+var YEARS = [1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015];
 
 var STATS_TITLES = ["totals", "per_game", "per_minute", "per_poss", "advanced"];
 
@@ -42,9 +42,9 @@ var requests = [];
 
 YEARS.forEach(function (year) {
   STATS_TITLES.forEach(function (statTitle) {
-    seasonStatsURL = getSeasonStatsURL(year, statTitle);
+    requests.push((function (year, statTitle, cb) {
+      var seasonStatsURL = getSeasonStatsURL(year, statTitle);
 
-    requests.push(function (cb) {
       request(seasonStatsURL, function (error, response, html) {
         if (!error) {
           var $ = cheerio.load(html);
@@ -54,7 +54,6 @@ YEARS.forEach(function (year) {
 
           table.forEach(function (rowObj) {
             var playerName = rowObj.Player;
-            delete rowObj.Player;
             seasonStats[year] = (seasonStats[year] || {});
             seasonStats[year][playerName] = (seasonStats[year][playerName] || {});
             seasonStats[year][playerName][statTitle] = (seasonStats[year][playerName][statTitle] || {});
@@ -73,7 +72,7 @@ YEARS.forEach(function (year) {
         console.log("Finished " + year + " " + statTitle);
         cb();
       });
-    });
+    }).bind(null, year, statTitle));
   });
 });
 
