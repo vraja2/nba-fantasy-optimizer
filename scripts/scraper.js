@@ -12,71 +12,71 @@ function getSeasonStatsURL (year, statTitle) {
 }
 
 function parseTable($, rows) {
-	var columnTitles = [];
-	var table = [];
+  var columnTitles = [];
+  var table = [];
 
   rows.each(function (i, row) {
     if (i === 0) {
-	    var columns = $(row).children();
-			columns.each(function (i, el) {
-				var columnVal = $(el).text();
-				columnTitles.push(columnVal);
-			});
-		} else {
-	    var columns = $(row).children();
-			var rowObj = {};
-			columns.each(function (i, el) {
-				var columnVal = $(el).text();
-			  var columnKey = columnTitles[i];
-				rowObj[columnKey] = columnVal;
-				table.push(rowObj);
-			});
-		}
-	});
+      var columns = $(row).children();
+      columns.each(function (i, el) {
+        var columnVal = $(el).text();
+        columnTitles.push(columnVal);
+      });
+    } else {
+      var columns = $(row).children();
+      var rowObj = {};
+      columns.each(function (i, el) {
+        var columnVal = $(el).text();
+        var columnKey = columnTitles[i];
+        rowObj[columnKey] = columnVal;
+        table.push(rowObj);
+      });
+    }
+  });
 
-	return table;
+  return table;
 }
 
 var seasonStats = {};
 var requests = [];
 
 YEARS.forEach(function (year) {
-	STATS_TITLES.forEach(function (statTitle) {
-	  seasonStatsURL = getSeasonStatsURL(year, statTitle);
+  STATS_TITLES.forEach(function (statTitle) {
+    seasonStatsURL = getSeasonStatsURL(year, statTitle);
 
-	  requests.push(function (cb) {
-  		request(seasonStatsURL, function (error, response, html) {
-  	    if (!error) {
-  	      var $ = cheerio.load(html);
+    requests.push(function (cb) {
+      request(seasonStatsURL, function (error, response, html) {
+        if (!error) {
+          var $ = cheerio.load(html);
 
-  				var rows = $(".stats_table tr");
-  				var table = parseTable($, rows);
+          var rows = $(".stats_table tr");
+          var table = parseTable($, rows);
 
-  				table.forEach(function (rowObj) {
-  					var playerName = rowObj.Player;
-  					delete rowObj.Player;
-  					seasonStats[year] = (seasonStats[year] || {});
-  					seasonStats[year][playerName] = (seasonStats[year][playerName] || {});
-  					seasonStats[year][playerName][statTitle] = (seasonStats[year][playerName][statTitle] || {});
+          table.forEach(function (rowObj) {
+            var playerName = rowObj.Player;
+            delete rowObj.Player;
+            seasonStats[year] = (seasonStats[year] || {});
+            seasonStats[year][playerName] = (seasonStats[year][playerName] || {});
+            seasonStats[year][playerName][statTitle] = (seasonStats[year][playerName][statTitle] || {});
 
-  					if (
-  						seasonStats[year][playerName][statTitle].Tm !== "TOT" &&
-  						playerName !== "Player"
-  					) {
-  						seasonStats[year][playerName][statTitle] = rowObj;
-  					}
-  				});
-  			} else {
-  				console.log(error);
-  			}
+            if (
+              seasonStats[year][playerName][statTitle].Tm !== "TOT" &&
+              playerName !== "Player"
+            ) {
+              seasonStats[year][playerName][statTitle] = rowObj;
+            }
+          });
+        } else {
+          console.log(error);
+        }
 
-  			console.log("Finished " + year + " " + statTitle);
-  			cb();
-  		});
-	  });
-	});
+        console.log("Finished " + year + " " + statTitle);
+        cb();
+      });
+    });
+  });
 });
 
 async.series(requests, function () {
-	fs.writeFileSync("seasonStats.json", JSON.stringify(seasonStats));
+  fs.writeFileSync("seasonStats.json", JSON.stringify(seasonStats));
 });
