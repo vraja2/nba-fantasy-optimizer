@@ -4,7 +4,6 @@ var cheerio = require('cheerio');
 var async = require('async');
 
 var YEARS = [1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015];
-
 var STATS_TITLES = ["totals", "per_game", "per_minute", "per_poss", "advanced"];
 
 function getSeasonStatsURL (year, statTitle) {
@@ -29,8 +28,8 @@ function parseTable($, rows) {
         var columnVal = $(el).text();
         var columnKey = columnTitles[i];
         rowObj[columnKey] = columnVal;
-        table.push(rowObj);
       });
+      table.push(rowObj);
     }
   });
 
@@ -54,15 +53,16 @@ YEARS.forEach(function (year) {
 
           table.forEach(function (rowObj) {
             var playerName = rowObj.Player;
-            seasonStats[year] = (seasonStats[year] || {});
-            seasonStats[year][playerName] = (seasonStats[year][playerName] || {});
-            seasonStats[year][playerName][statTitle] = (seasonStats[year][playerName][statTitle] || {});
+            delete rowObj.Player;
 
-            if (
-              seasonStats[year][playerName][statTitle].Tm !== "TOT" &&
-              playerName !== "Player"
-            ) {
-              seasonStats[year][playerName][statTitle] = rowObj;
+            if (playerName !== "Player") {
+              seasonStats[year] = (seasonStats[year] || {});
+              seasonStats[year][playerName] = (seasonStats[year][playerName] || {});
+              seasonStats[year][playerName][statTitle] = (seasonStats[year][playerName][statTitle] || {});
+
+              if (seasonStats[year][playerName][statTitle].Tm !== "TOT") {
+                seasonStats[year][playerName][statTitle] = rowObj;
+              }
             }
           });
         } else {
