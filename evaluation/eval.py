@@ -32,8 +32,6 @@ class Evaluation:
       test_player_names = np_name_vec[test_idx]
       model_obj.create_model(feat_train, eff_train)
       results = model_obj.export_results(feat_test, eff_test, test_player_names)
-      if fold_num == 0:
-        print results
       avg_error = self.evaluate_eff_error(results)
       print "Fold {}: {} % error".format(fold_num,avg_error)
       avg_fold_error += avg_error 
