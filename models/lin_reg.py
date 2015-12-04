@@ -21,10 +21,6 @@ class LinearReg:
     self.initialize_custom_feature_dict()
     self.construct_data_sets()
 
-    #self.train_features = train_features
-    #self.train_eff = train_eff
-    #self.create_model(train_features, train_eff)
-  
   def construct_data_sets(self):
     self.feature_matrix = []
     self.eff_vec = []
