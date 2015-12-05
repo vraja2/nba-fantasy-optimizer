@@ -21,7 +21,7 @@ def get_next_efficiency(name, year, df):
             return df.loc[(df['player'] == name) & (df['year'] == year + 1), 'curr-eff'].item()
     else:
         return float('NaN')
-df = pd.read_csv('../data/seasonStats.csv')
+df = pd.read_csv('./seasonStats.csv')
 
 
 # remove '*' from player names
@@ -35,4 +35,4 @@ df['next-eff'] = [get_next_efficiency(row['player'], row['year'], df) for index,
 df = df[[not math.isnan(x) for x in df['next-eff']]]
 
 # write to file'
-df.to_csv('../data/cleanedSeasonStats.csv')
+df.to_csv('../data/cleanedSeasonStats.csv',index=False)
