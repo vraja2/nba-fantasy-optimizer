@@ -6,6 +6,7 @@ sys.path.append('../models')
 from sklearn.cross_validation import KFold
 
 from lin_reg import LinearReg 
+from svm_rank import SVMRank
 
 # TODO: make this a base class and have various evaluation classes for each model
 class Evaluation:
@@ -16,6 +17,8 @@ class Evaluation:
     lr = LinearReg()
     self.evaluate_avg_player_eff_error(lr)
     self.evaluate_avg_player_ranking_error(lr)
+    svm_rank = SVMRank()
+    self.evaluate_avg_player_ranking_error(svm_rank)
 
   def evaluate_avg_player_eff_error(self, model_obj):
     # train on data from all years, but use k-fold cross validation
@@ -41,6 +44,8 @@ class Evaluation:
   def evaluate_avg_player_ranking_error(self, model_obj):
     years = [1985+i for i in range(30)]
     avg_rank_error = 0.0
+    # exclude year is the prev year to exclude. If exclude year = 2014, 
+    # you are using all data ranges except for 2014-2015.
     for exclude_year in years:
       feat_train = []
       eff_train = []
