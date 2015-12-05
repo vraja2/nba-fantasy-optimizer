@@ -9,7 +9,7 @@ def is_number(s):
     return False
 
 players = []
-with open('../data/bob.csv', 'rU') as csvfile:
+with open('../../data/bob.csv', 'rU') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     if row['year'] in ['2013']:
