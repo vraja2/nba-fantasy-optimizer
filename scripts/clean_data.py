@@ -35,4 +35,4 @@ df['next-eff'] = [get_next_efficiency(row['player'], row['year'], df) for index,
 df = df[[not math.isnan(x) for x in df['next-eff']]]
 
 # write to file'
-df.to_csv('../data/cleanedSeasonStats.csv')
+df.to_csv('../data/cleanedSeasonStats.csv', index=False)
